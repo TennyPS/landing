@@ -288,10 +288,12 @@
       $('r-load').textContent = fmtCount(leads / 30 * days / sellers);
 
       var shift = Math.max(-conv, Math.min(100 - conv, parseInt(f.shift.value, 10) || 0));
+      f.shift.value = shift;
       var newConv = conv + shift;
       var newRevenue = leads * newConv / 100 * check;
       var diff = newRevenue - revenue;
-      var sign = diff > 0 ? '+' : diff < 0 ? '−' : '';
+      var rounded = Math.round(diff);
+      var sign = rounded > 0 ? '+' : rounded < 0 ? '−' : '';
       $('r-shift').textContent = 'Конверсия: ' + fmtCount(newConv) + '% (' + (shift > 0 ? '+' : shift < 0 ? '−' : '') + fmtCount(Math.abs(shift)) + ' п. п.)';
       $('r-newrev').textContent = fmt(newRevenue) + ' ' + CURRENCY;
       $('r-diff').textContent = sign + fmt(Math.abs(diff)) + ' ' + CURRENCY;
