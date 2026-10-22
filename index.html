@@ -112,6 +112,18 @@
   .funnel-step { background: var(--bg-alt); border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; gap: 12px; }
   .funnel-step b { font-family: Georgia, "Times New Roman", serif; font-size: 20px; }
   .funnel-step.out { background: var(--accent); color: #fff; }
+  .metrics { display: grid; gap: 8px; margin: 0 0 24px; }
+  .metric { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+  .metric span { display: block; font-size: 15px; color: var(--muted); }
+  .metric b { font-family: Georgia, "Times New Roman", serif; font-size: 22px; overflow-wrap: anywhere; }
+  .whatif { background: var(--bg-alt); border-radius: 10px; padding: 16px; margin: 0 0 24px; }
+  .whatif h3 { font-size: 18px; margin-bottom: 4px; }
+  .whatif p { margin: 0 0 10px; color: var(--muted); font-size: 15px; }
+  .whatif input[type=range] { width: 100%; height: 36px; accent-color: var(--accent); margin: 4px 0 8px; }
+  .whatif-conv { font-weight: 600; color: var(--text) !important; }
+  .whatif-new { margin: 0 !important; color: var(--text) !important; }
+  .whatif-new b { font-family: Georgia, "Times New Roman", serif; font-size: 24px; display: block; overflow-wrap: anywhere; }
+  .whatif-diff { font-family: Georgia, "Times New Roman", serif; font-size: 20px; font-weight: 700; color: var(--accent-dark); }
 
   @media (max-width: 480px) {
     body { font-size: 16px; }
@@ -155,6 +167,20 @@
             <div class="funnel">
               <div class="funnel-step"><span>Заявок на входе</span><b id="r-in"></b></div>
               <div class="funnel-step out"><span>Оплат на выходе</span><b id="r-out"></b></div>
+            </div>
+            <div class="metrics">
+              <div class="metric"><span>Заявок в месяц не доходит до оплаты</span><b id="r-lost"></b></div>
+              <div class="metric"><span>Одна заявка в среднем приносит</span><b id="r-perlead"></b></div>
+              <div class="metric"><span>Один процентный пункт конверсии даёт в месяц</span><b id="r-pp"></b></div>
+              <div class="metric"><span>Заявок в работе у одного продавца</span><b id="r-load"></b></div>
+            </div>
+            <div class="whatif">
+              <h3>А что если конверсия изменится?</h3>
+              <p>Подвигайте ползунок: от −10 до +10 пунктов к вашей конверсии.</p>
+              <input type="range" id="f-shift" min="-10" max="10" step="1" value="0" aria-label="Изменение конверсии в процентных пунктах">
+              <p class="whatif-conv" id="r-shift"></p>
+              <p class="whatif-new">Выручка в месяц<b id="r-newrev"></b></p>
+              <p class="whatif-new">Разница с текущей<b class="whatif-diff" id="r-diff"></b></p>
             </div>
           </div>
           <a class="btn" id="r-tg" href="https://t.me/tennydm">Разобрать результат со мной</a>
@@ -222,7 +248,7 @@
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var f = { check: $('f-check'), leads: $('f-leads'), conv: $('f-conv'), sellers: $('f-sellers'), days: $('f-days') };
+  var f = { check: $('f-check'), leads: $('f-leads'), conv: $('f-conv'), sellers: $('f-sellers'), days: $('f-days'), shift: $('f-shift') };
   var CURRENCY = '₽';
 
   function num(el, min, max) {
@@ -256,6 +282,19 @@
       $('r-revenue').textContent = fmt(revenue) + ' ' + CURRENCY;
       $('r-in').textContent = fmtCount(leads);
       $('r-out').textContent = fmtCount(paid);
+      $('r-lost').textContent = fmtCount(leads - paid);
+      $('r-perlead').textContent = fmt(check * conv / 100) + ' ' + CURRENCY;
+      $('r-pp').textContent = fmt(leads / 100 * check) + ' ' + CURRENCY;
+      $('r-load').textContent = fmtCount(leads / 30 * days / sellers);
+
+      var shift = Math.max(-conv, Math.min(100 - conv, parseInt(f.shift.value, 10) || 0));
+      var newConv = conv + shift;
+      var newRevenue = leads * newConv / 100 * check;
+      var diff = newRevenue - revenue;
+      var sign = diff > 0 ? '+' : diff < 0 ? '−' : '';
+      $('r-shift').textContent = 'Конверсия: ' + fmtCount(newConv) + '% (' + (shift > 0 ? '+' : shift < 0 ? '−' : '') + fmtCount(Math.abs(shift)) + ' п. п.)';
+      $('r-newrev').textContent = fmt(newRevenue) + ' ' + CURRENCY;
+      $('r-diff').textContent = sign + fmt(Math.abs(diff)) + ' ' + CURRENCY;
     }
 
     var dayWord = days % 10 === 1 && days % 100 !== 11 ? 'день' :
