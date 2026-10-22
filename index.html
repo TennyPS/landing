@@ -95,6 +95,24 @@
   footer { padding: 28px 0 40px; font-size: 14px; color: var(--muted); text-align: center; }
   footer strong { color: var(--text); }
 
+  .gen-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .gen-example { font-size: 14px; color: var(--muted); margin: 0 0 18px; }
+  .field { display: block; margin-bottom: 16px; }
+  .field span { display: block; font-size: 15px; color: var(--muted); margin-bottom: 4px; }
+  .field input {
+    width: 100%; font: inherit; font-size: 18px; color: var(--text);
+    padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg);
+  }
+  .field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .result { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .result-hint { color: var(--muted); margin: 0; }
+  .revenue-label { font-size: 15px; color: var(--muted); margin: 0; }
+  .revenue { font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 8vw, 40px); font-weight: 700; margin: 0 0 20px; overflow-wrap: anywhere; }
+  .funnel { display: grid; gap: 8px; margin: 0 0 24px; }
+  .funnel-step { background: var(--bg-alt); border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; gap: 12px; }
+  .funnel-step b { font-family: Georgia, "Times New Roman", serif; font-size: 20px; }
+  .funnel-step.out { background: var(--accent); color: #fff; }
+
   @media (max-width: 480px) {
     body { font-size: 16px; }
     section { padding: 44px 0; }
@@ -113,12 +131,39 @@
     <div class="wrap">
       <h1>Соберу вам отдел продаж, который не держится на одном человеке</h1>
       <p class="lead">Я помогаю собственникам малого и среднего бизнеса навести порядок в продажах: чтобы сделки не терялись, клиенты возвращались, а выручка росла.</p>
-      <a class="btn" href="https://t.me/tennydm?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%BE%D0%B9%20%D0%BE%D1%82%D0%B4%D0%B5%D0%BB%20%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B6">Проверить свой отдел продаж</a>
-      <span class="btn-note">Пришлю в Telegram лично</span>
+      <a class="btn" href="#generator">Собрать свой отдел продаж</a>
+      <span class="btn-note">Займёт две минуты, без регистрации</span>
     </div>
   </section>
 
-  <section class="alt">
+  <section class="alt" id="generator">
+    <div class="wrap">
+      <h2>Ваш отдел продаж</h2>
+      <p class="intro">Введите свои цифры, и ниже сразу появится результат. Ничего не сохраняется и никуда не отправляется.</p>
+      <div class="gen-card">
+        <p class="gen-example">Пока в полях пример для производства. Замените его своими числами.</p>
+        <label class="field"><span>Средний чек, ₽</span><input id="f-check" type="number" inputmode="decimal" min="0" step="1000" value="15000"></label>
+        <label class="field"><span>Заявок в месяц</span><input id="f-leads" type="number" inputmode="numeric" min="0" step="1" value="40"></label>
+        <label class="field"><span>Сколько заявок доходит до оплаты, %</span><input id="f-conv" type="number" inputmode="decimal" min="0" max="100" step="5" value="20"></label>
+        <label class="field"><span>Продавцов</span><input id="f-sellers" type="number" inputmode="numeric" min="1" step="1" value="1"></label>
+        <label class="field"><span>Сколько дней длится сделка</span><input id="f-days" type="number" inputmode="numeric" min="0" step="1" value="14"></label>
+        <div class="result" aria-live="polite">
+          <p class="result-hint" id="r-hint" hidden>Введите, сколько заявок приходит в месяц, и я покажу результат.</p>
+          <div id="r-body">
+            <p class="revenue-label">Выручка в месяц при ваших цифрах</p>
+            <p class="revenue" id="r-revenue"></p>
+            <div class="funnel">
+              <div class="funnel-step"><span>Заявок на входе</span><b id="r-in"></b></div>
+              <div class="funnel-step out"><span>Оплат на выходе</span><b id="r-out"></b></div>
+            </div>
+          </div>
+          <a class="btn" id="r-tg" href="https://t.me/tennydm">Разобрать результат со мной</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
     <div class="wrap">
       <h2>Знакомо?</h2>
       <p class="intro">Дело идёт, но продажи держатся на вас и одном сотруднике, а системы нет.</p>
@@ -131,7 +176,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="alt">
     <div class="wrap">
       <h2>Что появляется после работы</h2>
       <p class="intro">Я провожу аудит продаж и выстраиваю отдел. Вот что обычно меняется у собственника.</p>
@@ -146,7 +191,7 @@
     </div>
   </section>
 
-  <section class="alt">
+  <section>
     <div class="wrap">
       <h2>Как это бывает на деле</h2>
       <div class="case">
@@ -173,6 +218,59 @@
     Строю отделы продаж: из хаоса в систему.
   </div>
 </footer>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var f = { check: $('f-check'), leads: $('f-leads'), conv: $('f-conv'), sellers: $('f-sellers'), days: $('f-days') };
+  var CURRENCY = '₽';
+
+  function num(el, min, max) {
+    var v = parseFloat(String(el.value).replace(',', '.'));
+    if (!isFinite(v) || v < min) v = min;
+    if (max !== undefined && v > max) v = max;
+    return v;
+  }
+  function group(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  function fmt(n) { return group(Math.round(n)); }
+  function fmtCount(n) {
+    var r = Math.round(n * 100) / 100;
+    var parts = String(r).split('.');
+    return group(parts[0]) + (parts[1] ? ',' + parts[1] : '');
+  }
+
+  function update() {
+    var check = num(f.check, 0);
+    var leads = num(f.leads, 0);
+    var conv = num(f.conv, 0, 100);
+    var sellers = Math.max(1, Math.round(num(f.sellers, 1)));
+    var days = Math.round(num(f.days, 0));
+
+    var paid = leads * conv / 100;
+    var revenue = paid * check;
+
+    var empty = leads === 0;
+    $('r-hint').hidden = !empty;
+    $('r-body').hidden = empty;
+    if (!empty) {
+      $('r-revenue').textContent = fmt(revenue) + ' ' + CURRENCY;
+      $('r-in').textContent = fmtCount(leads);
+      $('r-out').textContent = fmtCount(paid);
+    }
+
+    var dayWord = days % 10 === 1 && days % 100 !== 11 ? 'день' :
+      (days % 10 >= 2 && days % 10 <= 4 && (days % 100 < 10 || days % 100 >= 20)) ? 'дня' : 'дней';
+    var phrase = 'Здравствуйте! Генератор на сайте показал мне вот что: тип бизнеса — производство; ' +
+      'чек ' + fmt(check) + ' ' + CURRENCY + ', заявок ' + fmtCount(leads) + ' в месяц, ' +
+      'до оплаты доходит ' + fmtCount(conv) + '%, продавцов ' + sellers + ', сделка ' + days + ' ' + dayWord + '. ' +
+      'Хочу разобрать результат';
+    $('r-tg').href = 'https://t.me/tennydm?text=' + encodeURIComponent(phrase);
+  }
+
+  Object.keys(f).forEach(function (k) { f[k].addEventListener('input', update); });
+  update();
+})();
+</script>
 
 </body>
 </html>
