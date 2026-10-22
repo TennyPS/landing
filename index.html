@@ -173,6 +173,9 @@
               <div class="metric"><span>Одна заявка в среднем приносит</span><b id="r-perlead"></b></div>
               <div class="metric"><span>Один процентный пункт конверсии даёт в месяц</span><b id="r-pp"></b></div>
               <div class="metric"><span>Заявок в работе у одного продавца</span><b id="r-load"></b></div>
+              <div class="metric"><span>Заявок в месяц на одного продавца</span><b id="r-s-leads"></b></div>
+              <div class="metric"><span>Сделок в месяц на одного продавца</span><b id="r-s-paid"></b></div>
+              <div class="metric"><span>Выручка в месяц на одного продавца</span><b id="r-s-rev"></b></div>
             </div>
             <div class="whatif">
               <h3>А что если конверсия изменится?</h3>
@@ -286,6 +289,9 @@
       $('r-perlead').textContent = fmt(check * conv / 100) + ' ' + CURRENCY;
       $('r-pp').textContent = fmt(leads / 100 * check) + ' ' + CURRENCY;
       $('r-load').textContent = fmtCount(leads / 30 * days / sellers);
+      $('r-s-leads').textContent = fmtCount(leads / sellers);
+      $('r-s-paid').textContent = fmtCount(paid / sellers);
+      $('r-s-rev').textContent = fmt(revenue / sellers) + ' ' + CURRENCY;
 
       var shift = Math.max(-conv, Math.min(100 - conv, parseInt(f.shift.value, 10) || 0));
       f.shift.value = shift;
