@@ -104,6 +104,12 @@
     padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg);
   }
   .field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .cur { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 16px; }
+  .cur button {
+    font: inherit; font-size: 18px; font-weight: 600; color: var(--text); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 10px; min-height: 48px; padding: 0; cursor: pointer;
+  }
+  .cur button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
   .result { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--line); }
   .result-hint { color: var(--muted); margin: 0; }
   .revenue-label { font-size: 15px; color: var(--muted); margin: 0; }
@@ -154,7 +160,13 @@
       <p class="intro">Введите свои цифры, и ниже сразу появится результат. Ничего не сохраняется и никуда не отправляется.</p>
       <div class="gen-card">
         <p class="gen-example">Пока в полях пример для производства. Замените его своими числами.</p>
-        <label class="field"><span>Средний чек, ₽</span><input id="f-check" type="number" inputmode="decimal" min="0" step="1000" value="15000"></label>
+        <div class="cur" role="group" aria-label="Валюта">
+          <button type="button" data-cur="RUB" aria-pressed="true">₽</button>
+          <button type="button" data-cur="BYN" aria-pressed="false">BYN</button>
+          <button type="button" data-cur="USD" aria-pressed="false">$</button>
+          <button type="button" data-cur="EUR" aria-pressed="false">€</button>
+        </div>
+        <label class="field"><span id="l-check">Средний чек, ₽</span><input id="f-check" type="number" inputmode="decimal" min="0" step="1000" value="15000"></label>
         <label class="field"><span>Заявок в месяц</span><input id="f-leads" type="number" inputmode="numeric" min="0" step="1" value="40"></label>
         <label class="field"><span>Сколько заявок доходит до оплаты, %</span><input id="f-conv" type="number" inputmode="decimal" min="0" max="100" step="5" value="20"></label>
         <label class="field"><span>Продавцов</span><input id="f-sellers" type="number" inputmode="numeric" min="1" step="1" value="1"></label>
@@ -252,7 +264,16 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var f = { check: $('f-check'), leads: $('f-leads'), conv: $('f-conv'), sellers: $('f-sellers'), days: $('f-days'), shift: $('f-shift') };
-  var CURRENCY = '₽';
+  // Знак белорусского рубля ещё не в Unicode (выйдет в 19.0, 2027): когда появятся шрифты, меняется только sign здесь.
+  // Значения по умолчанию — округлённые примеры для каждой валюты, без пересчёта по курсу.
+  var CURRENCIES = {
+    RUB: { sign: '₽',   after: true,  step: 1000, check: 15000 },
+    BYN: { sign: 'BYN', after: true,  step: 50,   check: 450 },
+    USD: { sign: '$',   after: false, step: 5,    check: 150 },
+    EUR: { sign: '€',   after: false, step: 5,    check: 150 }
+  };
+  var cur = CURRENCIES.RUB;
+  var checkTouched = false;
 
   function num(el, min, max) {
     var v = parseFloat(String(el.value).replace(',', '.'));
@@ -262,6 +283,7 @@
   }
   function group(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
   function fmt(n) { return group(Math.round(n)); }
+  function money(n) { return cur.after ? fmt(n) + ' ' + cur.sign : cur.sign + fmt(n); }
   function fmtCount(n) {
     var r = Math.round(n * 100) / 100;
     var parts = String(r).split('.');
@@ -275,6 +297,9 @@
     var sellers = Math.max(1, Math.round(num(f.sellers, 1)));
     var days = Math.round(num(f.days, 0));
 
+    $('l-check').textContent = 'Средний чек, ' + cur.sign;
+    f.check.step = cur.step;
+
     var paid = leads * conv / 100;
     var revenue = paid * check;
 
@@ -282,16 +307,16 @@
     $('r-hint').hidden = !empty;
     $('r-body').hidden = empty;
     if (!empty) {
-      $('r-revenue').textContent = fmt(revenue) + ' ' + CURRENCY;
+      $('r-revenue').textContent = money(revenue);
       $('r-in').textContent = fmtCount(leads);
       $('r-out').textContent = fmtCount(paid);
       $('r-lost').textContent = fmtCount(leads - paid);
-      $('r-perlead').textContent = fmt(check * conv / 100) + ' ' + CURRENCY;
-      $('r-pp').textContent = fmt(leads / 100 * check) + ' ' + CURRENCY;
+      $('r-perlead').textContent = money(check * conv / 100);
+      $('r-pp').textContent = money(leads / 100 * check);
       $('r-load').textContent = fmtCount(leads / 30 * days / sellers);
       $('r-s-leads').textContent = fmtCount(leads / sellers);
       $('r-s-paid').textContent = fmtCount(paid / sellers);
-      $('r-s-rev').textContent = fmt(revenue / sellers) + ' ' + CURRENCY;
+      $('r-s-rev').textContent = money(revenue / sellers);
 
       var shift = Math.max(-conv, Math.min(100 - conv, parseInt(f.shift.value, 10) || 0));
       f.shift.value = shift;
@@ -301,19 +326,30 @@
       var rounded = Math.round(diff);
       var sign = rounded > 0 ? '+' : rounded < 0 ? '−' : '';
       $('r-shift').textContent = 'Конверсия: ' + fmtCount(newConv) + '% (' + (shift > 0 ? '+' : shift < 0 ? '−' : '') + fmtCount(Math.abs(shift)) + ' п. п.)';
-      $('r-newrev').textContent = fmt(newRevenue) + ' ' + CURRENCY;
-      $('r-diff').textContent = sign + fmt(Math.abs(diff)) + ' ' + CURRENCY;
+      $('r-newrev').textContent = money(newRevenue);
+      $('r-diff').textContent = sign + money(Math.abs(diff));
     }
 
     var dayWord = days % 10 === 1 && days % 100 !== 11 ? 'день' :
       (days % 10 >= 2 && days % 10 <= 4 && (days % 100 < 10 || days % 100 >= 20)) ? 'дня' : 'дней';
     var phrase = 'Здравствуйте! Генератор на сайте показал мне вот что: тип бизнеса — производство; ' +
-      'чек ' + fmt(check) + ' ' + CURRENCY + ', заявок ' + fmtCount(leads) + ' в месяц, ' +
+      'чек ' + money(check) + ', заявок ' + fmtCount(leads) + ' в месяц, ' +
       'до оплаты доходит ' + fmtCount(conv) + '%, продавцов ' + sellers + ', сделка ' + days + ' ' + dayWord + '. ' +
       'Хочу разобрать результат';
     $('r-tg').href = 'https://t.me/tennydm?text=' + encodeURIComponent(phrase);
   }
 
+  f.check.addEventListener('input', function () { checkTouched = true; });
+  Array.prototype.forEach.call(document.querySelectorAll('.cur button'), function (b) {
+    b.addEventListener('click', function () {
+      cur = CURRENCIES[b.getAttribute('data-cur')];
+      Array.prototype.forEach.call(document.querySelectorAll('.cur button'), function (o) {
+        o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+      });
+      if (!checkTouched) f.check.value = cur.check;
+      update();
+    });
+  });
   Object.keys(f).forEach(function (k) { f[k].addEventListener('input', update); });
   update();
 })();
