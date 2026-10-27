@@ -319,8 +319,10 @@
   function renderFunnel(leads, paid) {
     var rows = [{ label: 'Заявок на входе', value: leads, cls: '' }];
     var prev = leads;
-    type.stages.forEach(function (s) {
-      prev = stageCount(s.share, leads, paid, prev);
+    var n = type.stages.length;
+    type.stages.forEach(function (s, i) {
+      var share = s.share !== undefined ? s.share : (leads - (leads - paid) * (i + 1) / (n + 1)) / leads * 100;
+      prev = stageCount(share, leads, paid, prev);
       rows.push({ label: s.name, value: prev, cls: ' mid' });
     });
     rows.push({ label: 'Оплат на выходе', value: paid, cls: ' out' });
