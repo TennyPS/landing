@@ -345,7 +345,7 @@
     conv:  function (v) { return fmtCount(v) + '%'; },
     check: function (v) { return money(v); },
     days:  function (v) { return fmtCount(v) + ' ' + dayWord(v); },
-    load:  function (v) { return fmtCount(v); }
+    load:  function (v) { return fmt(v); }
   };
   function dayWord(n) {
     return n % 10 === 1 && n % 100 !== 11 ? 'день' :
