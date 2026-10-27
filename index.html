@@ -126,6 +126,10 @@
   .metric { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
   .metric span { display: block; font-size: 15px; color: var(--muted); }
   .metric b { font-family: Georgia, "Times New Roman", serif; font-size: 22px; overflow-wrap: anywhere; }
+  .block-title { font-size: 18px; margin: 0 0 10px; }
+  .script { background: var(--bg-alt); border-left: 4px solid var(--accent); border-radius: 10px; padding: 14px 16px 2px; margin: 0 0 24px; }
+  .script p { margin: 0 0 12px; }
+  .script { overflow-wrap: anywhere; }
   .whatif { background: var(--bg-alt); border-radius: 10px; padding: 16px; margin: 0 0 24px; }
   .whatif h3 { font-size: 18px; margin-bottom: 4px; }
   .whatif p { margin: 0 0 10px; color: var(--muted); font-size: 15px; }
@@ -188,11 +192,15 @@
             <p class="revenue" id="r-revenue"></p>
             <p class="funnel-note" id="r-funnel-note">Раскладка по этапам примерная, у вас она может отличаться. Точные цифры покажет разбор.</p>
             <div class="funnel" id="r-funnel"></div>
+            <h3 class="block-title">Ваши показатели</h3>
+            <div class="metrics" id="r-kpis"></div>
+            <h3 class="block-title">Скрипт первого контакта</h3>
+            <div class="script" id="r-script"></div>
+            <h3 class="block-title">Аналитика</h3>
             <div class="metrics">
               <div class="metric"><span>Заявок в месяц не доходит до оплаты</span><b id="r-lost"></b></div>
               <div class="metric"><span>Одна заявка в среднем приносит</span><b id="r-perlead"></b></div>
               <div class="metric"><span>Один процентный пункт конверсии даёт в месяц</span><b id="r-pp"></b></div>
-              <div class="metric"><span>Заявок в работе у одного продавца</span><b id="r-load"></b></div>
               <div class="metric"><span>Заявок в месяц на одного продавца</span><b id="r-s-leads"></b></div>
               <div class="metric"><span>Сделок в месяц на одного продавца</span><b id="r-s-paid"></b></div>
               <div class="metric"><span>Выручка в месяц на одного продавца</span><b id="r-s-rev"></b></div>
@@ -332,6 +340,43 @@
     $('r-funnel-note').hidden = type.stages.length === 0;
   }
 
+  // Ключ KPI из шаблона -> как показать число. Сами значения считает update() и передаёт в renderKpis.
+  var KPI_FORMAT = {
+    conv:  function (v) { return fmtCount(v) + '%'; },
+    check: function (v) { return money(v); },
+    days:  function (v) { return fmtCount(v) + ' ' + dayWord(v); },
+    load:  function (v) { return fmtCount(v); }
+  };
+  function dayWord(n) {
+    return n % 10 === 1 && n % 100 !== 11 ? 'день' :
+      (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? 'дня' : 'дней';
+  }
+  function renderKpis(values) {
+    var box = $('r-kpis');
+    box.textContent = '';
+    type.kpis.forEach(function (k) {
+      if (!KPI_FORMAT[k.key]) return; // опечатка в ключе шаблона не должна ломать весь результат
+      var card = document.createElement('div');
+      card.className = 'metric';
+      var span = document.createElement('span');
+      span.textContent = k.label;
+      var b = document.createElement('b');
+      b.textContent = KPI_FORMAT[k.key](values[k.key]);
+      card.appendChild(span);
+      card.appendChild(b);
+      box.appendChild(card);
+    });
+  }
+  function renderScript() {
+    var box = $('r-script');
+    box.textContent = '';
+    type.script.forEach(function (line) {
+      var p = document.createElement('p');
+      p.textContent = line;
+      box.appendChild(p);
+    });
+  }
+
   function num(el, min, max) {
     var v = parseFloat(String(el.value).replace(',', '.'));
     if (!isFinite(v) || v < min) v = min;
@@ -369,7 +414,8 @@
       $('r-lost').textContent = fmtCount(leads - paid);
       $('r-perlead').textContent = money(check * conv / 100);
       $('r-pp').textContent = money(leads / 100 * check);
-      $('r-load').textContent = fmtCount(leads / 30 * days / sellers);
+      renderKpis({ conv: conv, check: check, days: days, load: leads / 30 * days / sellers });
+      renderScript();
       $('r-s-leads').textContent = fmtCount(leads / sellers);
       $('r-s-paid').textContent = fmtCount(paid / sellers);
       $('r-s-rev').textContent = money(revenue / sellers);
@@ -386,11 +432,9 @@
       $('r-diff').textContent = sign + money(Math.abs(diff));
     }
 
-    var dayWord = days % 10 === 1 && days % 100 !== 11 ? 'день' :
-      (days % 10 >= 2 && days % 10 <= 4 && (days % 100 < 10 || days % 100 >= 20)) ? 'дня' : 'дней';
     var phrase = 'Здравствуйте! Генератор на сайте показал мне вот что: тип бизнеса — ' + type.name + '; ' +
       'чек ' + money(check) + ', заявок ' + fmtCount(leads) + ' в месяц, ' +
-      'до оплаты доходит ' + fmtCount(conv) + '%, продавцов ' + sellers + ', сделка ' + days + ' ' + dayWord + '. ' +
+      'до оплаты доходит ' + fmtCount(conv) + '%, продавцов ' + sellers + ', сделка ' + days + ' ' + dayWord(days) + '. ' +
       'Хочу разобрать результат';
     $('r-tg').href = 'https://t.me/tennydm?text=' + encodeURIComponent(phrase);
   }
