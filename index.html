@@ -95,7 +95,52 @@
   footer { padding: 28px 0 40px; font-size: 14px; color: var(--muted); text-align: center; }
   footer strong { color: var(--text); }
 
+  .gen-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .gen-example { font-size: 14px; color: var(--muted); margin: 0 0 18px; }
+  .field { display: block; margin-bottom: 16px; }
+  .field span { display: block; font-size: 15px; color: var(--muted); margin-bottom: 4px; }
+  .field input {
+    width: 100%; font: inherit; font-size: 18px; color: var(--text);
+    padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg);
+  }
+  .field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .cur { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 16px; }
+  .cur button {
+    font: inherit; font-size: 18px; font-weight: 600; color: var(--text); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 10px; min-height: 48px; padding: 0; cursor: pointer;
+  }
+  .cur.types { grid-template-columns: repeat(3, 1fr); }
+  .cur.types button { font-size: 16px; padding: 0 6px; overflow-wrap: anywhere; }
+  .cur button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .result { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .result-hint { color: var(--muted); margin: 0; }
+  .revenue-label { font-size: 15px; color: var(--muted); margin: 0; }
+  .revenue { font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 8vw, 40px); font-weight: 700; margin: 0 0 20px; overflow-wrap: anywhere; }
+  .funnel { display: grid; gap: 8px; margin: 0 0 24px; }
+  .funnel-step { background: var(--bg-alt); border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; gap: 12px; }
+  .funnel-step b { font-family: Georgia, "Times New Roman", serif; font-size: 20px; }
+  .funnel-note { font-size: 14px; color: var(--muted); margin: 0 0 8px; }
+  .funnel-step.mid { background: var(--bg); border: 1px dashed var(--line); }
+  .funnel-step.out { background: var(--accent); color: #fff; }
+  .metrics { display: grid; gap: 8px; margin: 0 0 24px; }
+  .metric { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+  .metric span { display: block; font-size: 15px; color: var(--muted); }
+  .metric b { font-family: Georgia, "Times New Roman", serif; font-size: 22px; overflow-wrap: anywhere; }
+  .block-title { font-size: 18px; margin: 0 0 10px; }
+  .script { background: var(--bg-alt); border-left: 4px solid var(--accent); border-radius: 10px; padding: 14px 16px 2px; margin: 0 0 24px; }
+  .script p { margin: 0 0 12px; }
+  .script { overflow-wrap: anywhere; }
+  .whatif { background: var(--bg-alt); border-radius: 10px; padding: 16px; margin: 0 0 24px; }
+  .whatif h3 { font-size: 18px; margin-bottom: 4px; }
+  .whatif p { margin: 0 0 10px; color: var(--muted); font-size: 15px; }
+  .whatif input[type=range] { width: 100%; height: 36px; accent-color: var(--accent); margin: 4px 0 8px; }
+  .whatif-conv { font-weight: 600; color: var(--text) !important; }
+  .whatif-new { margin: 0 !important; color: var(--text) !important; }
+  .whatif-new b { font-family: Georgia, "Times New Roman", serif; font-size: 24px; display: block; overflow-wrap: anywhere; }
+  .whatif-diff { font-family: Georgia, "Times New Roman", serif; font-size: 20px; font-weight: 700; color: var(--accent-dark); }
+
   @media (max-width: 480px) {
+    .cur.types { grid-template-columns: 1fr; }
     body { font-size: 16px; }
     section { padding: 44px 0; }
     .btn { display: block; text-align: center; padding: 16px 20px; }
@@ -113,12 +158,69 @@
     <div class="wrap">
       <h1>Соберу вам отдел продаж, который не держится на одном человеке</h1>
       <p class="lead">Я помогаю собственникам малого и среднего бизнеса навести порядок в продажах: чтобы сделки не терялись, клиенты возвращались, а выручка росла.</p>
-      <a class="btn" href="https://t.me/tennydm?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%B8%D1%82%D1%8C%20%D1%81%D0%B2%D0%BE%D0%B9%20%D0%BE%D1%82%D0%B4%D0%B5%D0%BB%20%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B6">Проверить свой отдел продаж</a>
-      <span class="btn-note">Пришлю в Telegram лично</span>
+      <a class="btn" href="#generator">Собрать свой отдел продаж</a>
+      <span class="btn-note">Займёт две минуты, без регистрации</span>
     </div>
   </section>
 
-  <section class="alt">
+  <section class="alt" id="generator">
+    <div class="wrap">
+      <h2>Ваш отдел продаж</h2>
+      <p class="intro">Введите свои цифры, и ниже сразу появится результат. Ничего не сохраняется и никуда не отправляется.</p>
+      <div class="gen-card">
+        <p class="gen-example" id="gen-example"></p>
+        <div class="cur types" role="group" aria-label="Тип бизнеса">
+          <button type="button" data-type="manufacturing" aria-pressed="true">Производство</button>
+          <button type="button" data-type="it" aria-pressed="false">IT</button>
+          <button type="button" data-type="services" aria-pressed="false">Услуги</button>
+        </div>
+        <div class="cur" role="group" aria-label="Валюта">
+          <button type="button" data-cur="RUB" aria-pressed="true">₽</button>
+          <button type="button" data-cur="BYN" aria-pressed="false">BYN</button>
+          <button type="button" data-cur="USD" aria-pressed="false">$</button>
+          <button type="button" data-cur="EUR" aria-pressed="false">€</button>
+        </div>
+        <label class="field"><span id="l-check">Средний чек, ₽</span><input id="f-check" type="number" inputmode="decimal" min="0" step="1000" value="15000"></label>
+        <label class="field"><span>Заявок в месяц</span><input id="f-leads" type="number" inputmode="numeric" min="0" step="1" value="40"></label>
+        <label class="field"><span>Сколько заявок доходит до оплаты, %</span><input id="f-conv" type="number" inputmode="decimal" min="0" max="100" step="5" value="20"></label>
+        <label class="field"><span>Продавцов</span><input id="f-sellers" type="number" inputmode="numeric" min="1" step="1" value="1"></label>
+        <label class="field"><span>Сколько дней длится сделка</span><input id="f-days" type="number" inputmode="numeric" min="0" step="1" value="14"></label>
+        <div class="result" aria-live="polite">
+          <p class="result-hint" id="r-hint" hidden>Введите, сколько заявок приходит в месяц, и я покажу результат.</p>
+          <div id="r-body">
+            <p class="revenue-label">Выручка в месяц при ваших цифрах</p>
+            <p class="revenue" id="r-revenue"></p>
+            <p class="funnel-note" id="r-funnel-note">Раскладка по этапам примерная, у вас она может отличаться. Точные цифры покажет разбор.</p>
+            <div class="funnel" id="r-funnel"></div>
+            <h3 class="block-title">Ваши показатели</h3>
+            <div class="metrics" id="r-kpis"></div>
+            <h3 class="block-title">Скрипт первого контакта</h3>
+            <div class="script" id="r-script"></div>
+            <h3 class="block-title">Аналитика</h3>
+            <div class="metrics">
+              <div class="metric"><span>Заявок в месяц не доходит до оплаты</span><b id="r-lost"></b></div>
+              <div class="metric"><span>Одна заявка в среднем приносит</span><b id="r-perlead"></b></div>
+              <div class="metric"><span>Один процентный пункт конверсии даёт в месяц</span><b id="r-pp"></b></div>
+              <div class="metric"><span>Заявок в месяц на одного продавца</span><b id="r-s-leads"></b></div>
+              <div class="metric"><span>Сделок в месяц на одного продавца</span><b id="r-s-paid"></b></div>
+              <div class="metric"><span>Выручка в месяц на одного продавца</span><b id="r-s-rev"></b></div>
+            </div>
+            <div class="whatif">
+              <h3>А что если конверсия изменится?</h3>
+              <p>Подвигайте ползунок: от −10 до +10 пунктов к вашей конверсии.</p>
+              <input type="range" id="f-shift" min="-10" max="10" step="1" value="0" aria-label="Изменение конверсии в процентных пунктах">
+              <p class="whatif-conv" id="r-shift"></p>
+              <p class="whatif-new">Выручка в месяц<b id="r-newrev"></b></p>
+              <p class="whatif-new">Разница с текущей<b class="whatif-diff" id="r-diff"></b></p>
+            </div>
+          </div>
+          <a class="btn" id="r-tg" href="https://t.me/tennydm">Разобрать результат со мной</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
     <div class="wrap">
       <h2>Знакомо?</h2>
       <p class="intro">Дело идёт, но продажи держатся на вас и одном сотруднике, а системы нет.</p>
@@ -131,7 +233,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="alt">
     <div class="wrap">
       <h2>Что появляется после работы</h2>
       <p class="intro">Я провожу аудит продаж и выстраиваю отдел. Вот что обычно меняется у собственника.</p>
@@ -146,7 +248,7 @@
     </div>
   </section>
 
-  <section class="alt">
+  <section>
     <div class="wrap">
       <h2>Как это бывает на деле</h2>
       <div class="case">
@@ -173,6 +275,197 @@
     Строю отделы продаж: из хаоса в систему.
   </div>
 </footer>
+
+<script src="templates.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var f = { check: $('f-check'), leads: $('f-leads'), conv: $('f-conv'), sellers: $('f-sellers'), days: $('f-days'), shift: $('f-shift') };
+  // Знак белорусского рубля ещё не в Unicode (выйдет в 19.0, 2027): когда появятся шрифты, меняется только sign здесь.
+  // Значения по умолчанию — округлённые примеры для каждой валюты, без пересчёта по курсу.
+  var CURRENCIES = {
+    RUB: { sign: '₽',   after: true,  step: 1000 },
+    BYN: { sign: 'BYN', after: true,  step: 50 },
+    USD: { sign: '$',   after: false, step: 5 },
+    EUR: { sign: '€',   after: false, step: 5 }
+  };
+  var curCode = 'RUB';
+  var cur = CURRENCIES.RUB;
+  var type = TEMPLATES.manufacturing;
+  // Поля, которые человек менял сам: смена типа или валюты их не трогает.
+  var touched = {};
+  var defaultFields = ['check', 'leads', 'conv', 'sellers', 'days'];
+
+  function setPressed(selector, active) {
+    Array.prototype.forEach.call(document.querySelectorAll(selector), function (o) {
+      o.setAttribute('aria-pressed', o === active ? 'true' : 'false');
+    });
+  }
+
+  function applyDefaults() {
+    var d = type.defaults;
+    var values = { check: d.check[curCode], leads: d.leads, conv: d.conv, sellers: d.sellers, days: d.days };
+    defaultFields.forEach(function (k) { if (!touched[k]) f[k].value = values[k]; });
+    var anyTouched = defaultFields.some(function (k) { return touched[k]; });
+    $('gen-example').textContent = anyTouched
+      ? 'Часть чисел ваши, остальные пока примерные для типа «' + type.name + '».'
+      : 'Пока в полях пример для типа «' + type.name + '». Замените его своими числами.';
+  }
+
+  // Число на этапе: доля заявок из шаблона, но не выше предыдущего этапа и не ниже оплат.
+  function stageCount(share, leads, paid, prev) {
+    return Math.min(prev, Math.max(paid, Math.round(leads * share / 100)));
+  }
+  function renderFunnel(leads, paid) {
+    var rows = [{ label: 'Заявок на входе', value: leads, cls: '' }];
+    var prev = leads;
+    var n = type.stages.length;
+    type.stages.forEach(function (s, i) {
+      var share = s.share !== undefined ? s.share : (leads - (leads - paid) * (i + 1) / (n + 1)) / leads * 100;
+      prev = stageCount(share, leads, paid, prev);
+      rows.push({ label: s.name, value: prev, cls: ' mid' });
+    });
+    rows.push({ label: 'Оплат на выходе', value: paid, cls: ' out' });
+    var box = $('r-funnel');
+    box.textContent = '';
+    rows.forEach(function (r) {
+      var step = document.createElement('div');
+      step.className = 'funnel-step' + r.cls;
+      var span = document.createElement('span');
+      span.textContent = r.label;
+      var b = document.createElement('b');
+      b.textContent = fmtCount(r.value);
+      step.appendChild(span);
+      step.appendChild(b);
+      box.appendChild(step);
+    });
+    $('r-funnel-note').hidden = type.stages.length === 0;
+  }
+
+  // Ключ KPI из шаблона -> как показать число. Сами значения считает update() и передаёт в renderKpis.
+  var KPI_FORMAT = {
+    conv:  function (v) { return fmtCount(v) + '%'; },
+    check: function (v) { return money(v); },
+    days:  function (v) { return fmtCount(v) + ' ' + dayWord(v); },
+    load:  function (v) { return fmt(v); }
+  };
+  function dayWord(n) {
+    return n % 10 === 1 && n % 100 !== 11 ? 'день' :
+      (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? 'дня' : 'дней';
+  }
+  function renderKpis(values) {
+    var box = $('r-kpis');
+    box.textContent = '';
+    type.kpis.forEach(function (k) {
+      if (!KPI_FORMAT[k.key]) return; // опечатка в ключе шаблона не должна ломать весь результат
+      var card = document.createElement('div');
+      card.className = 'metric';
+      var span = document.createElement('span');
+      span.textContent = k.label;
+      var b = document.createElement('b');
+      b.textContent = KPI_FORMAT[k.key](values[k.key]);
+      card.appendChild(span);
+      card.appendChild(b);
+      box.appendChild(card);
+    });
+  }
+  function renderScript() {
+    var box = $('r-script');
+    box.textContent = '';
+    type.script.forEach(function (line) {
+      var p = document.createElement('p');
+      p.textContent = line;
+      box.appendChild(p);
+    });
+  }
+
+  function num(el, min, max) {
+    var v = parseFloat(String(el.value).replace(',', '.'));
+    if (!isFinite(v) || v < min) v = min;
+    if (max !== undefined && v > max) v = max;
+    return v;
+  }
+  function group(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  function fmt(n) { return group(Math.round(n)); }
+  function money(n) { return cur.after ? fmt(n) + ' ' + cur.sign : cur.sign + fmt(n); }
+  function fmtCount(n) {
+    var r = Math.round(n * 100) / 100;
+    var parts = String(r).split('.');
+    return group(parts[0]) + (parts[1] ? ',' + parts[1] : '');
+  }
+
+  function update() {
+    var check = num(f.check, 0);
+    var leads = num(f.leads, 0);
+    var conv = num(f.conv, 0, 100);
+    var sellers = Math.max(1, Math.round(num(f.sellers, 1)));
+    var days = Math.round(num(f.days, 0));
+
+    $('l-check').textContent = 'Средний чек, ' + cur.sign;
+    f.check.step = cur.step;
+
+    var paid = leads * conv / 100;
+    var revenue = paid * check;
+
+    var empty = leads === 0;
+    $('r-hint').hidden = !empty;
+    $('r-body').hidden = empty;
+    if (!empty) {
+      $('r-revenue').textContent = money(revenue);
+      renderFunnel(leads, paid);
+      $('r-lost').textContent = fmtCount(leads - paid);
+      $('r-perlead').textContent = money(check * conv / 100);
+      $('r-pp').textContent = money(leads / 100 * check);
+      renderKpis({ conv: conv, check: check, days: days, load: leads / 30 * days / sellers });
+      renderScript();
+      $('r-s-leads').textContent = fmtCount(leads / sellers);
+      $('r-s-paid').textContent = fmtCount(paid / sellers);
+      $('r-s-rev').textContent = money(revenue / sellers);
+
+      var shift = Math.max(-conv, Math.min(100 - conv, parseInt(f.shift.value, 10) || 0));
+      f.shift.value = shift;
+      var newConv = conv + shift;
+      var newRevenue = leads * newConv / 100 * check;
+      var diff = newRevenue - revenue;
+      var rounded = Math.round(diff);
+      var sign = rounded > 0 ? '+' : rounded < 0 ? '−' : '';
+      $('r-shift').textContent = 'Конверсия: ' + fmtCount(newConv) + '% (' + (shift > 0 ? '+' : shift < 0 ? '−' : '') + fmtCount(Math.abs(shift)) + ' п. п.)';
+      $('r-newrev').textContent = money(newRevenue);
+      $('r-diff').textContent = sign + money(Math.abs(diff));
+    }
+
+    var phrase = 'Здравствуйте! Генератор на сайте показал мне вот что: тип бизнеса — ' + type.name + '; ' +
+      'чек ' + money(check) + ', заявок ' + fmtCount(leads) + ' в месяц, ' +
+      'до оплаты доходит ' + fmtCount(conv) + '%, продавцов ' + sellers + ', сделка ' + days + ' ' + dayWord(days) + '. ' +
+      'Хочу разобрать результат';
+    $('r-tg').href = 'https://t.me/tennydm?text=' + encodeURIComponent(phrase);
+  }
+
+  defaultFields.forEach(function (k) {
+    f[k].addEventListener('input', function () { touched[k] = true; applyDefaults(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.types button'), function (b) {
+    b.addEventListener('click', function () {
+      type = TEMPLATES[b.getAttribute('data-type')];
+      setPressed('.types button', b);
+      applyDefaults();
+      update();
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.cur button[data-cur]'), function (b) {
+    b.addEventListener('click', function () {
+      curCode = b.getAttribute('data-cur');
+      cur = CURRENCIES[curCode];
+      setPressed('.cur button[data-cur]', b);
+      applyDefaults();
+      update();
+    });
+  });
+  Object.keys(f).forEach(function (k) { f[k].addEventListener('input', update); });
+  applyDefaults();
+  update();
+})();
+</script>
 
 </body>
 </html>
