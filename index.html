@@ -444,6 +444,12 @@
     $('r-tg').href = 'https://t.me/tennydm?text=' + encodeURIComponent(phrase);
   }
 
+  // Конверсия вне 0–100 не имеет продолжения набора, поэтому правим поле сразу: число в поле всегда совпадает с расчётным.
+  f.conv.addEventListener('input', function () {
+    var v = parseFloat(String(f.conv.value).replace(',', '.'));
+    if (isFinite(v) && v > 100) f.conv.value = 100;
+    else if (isFinite(v) && v < 0) f.conv.value = 0;
+  });
   defaultFields.forEach(function (k) {
     f[k].addEventListener('input', function () { touched[k] = true; applyDefaults(); });
   });
